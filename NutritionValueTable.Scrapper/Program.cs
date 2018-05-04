@@ -3,6 +3,7 @@ using NutritionValueTable.Common;
 using NutritionValueTable.Model;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
@@ -19,11 +20,13 @@ namespace NutritionValueTable.Scrapper
       public static HttpClient HttpClient;
       public static List<Product> Products = new List<Product>();
 
+      public static string ProductsTable;
+
       private static void Main(string[] args)
       {
          HttpClient = new HttpClient();
 
-         for (byte i = 65; i < 91; i++)
+         for (byte i = 65; i < 66; i++) //91
          {
             var character = Encoding.ASCII.GetString(new byte[] { i });
 
@@ -42,6 +45,20 @@ namespace NutritionValueTable.Scrapper
             }
 
             Console.WriteLine("Ready for: " + character);
+         }
+
+         ProductsTable = string.Join("\r\n", Products.Select(o =>
+         {
+            var values = o.Name + ";";
+            values += string.Join(";", o.Nutrients.Select(n => $"{n.Name},{n.Unit},{n.Value}"));
+            return values;
+         }));
+
+         var exportPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\")) + "sample.txt";
+
+         using (var stream = File.CreateText(exportPath))
+         {
+            stream.Write(ProductsTable);
          }
       }
 

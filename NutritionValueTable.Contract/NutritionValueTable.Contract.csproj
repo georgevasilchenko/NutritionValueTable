@@ -4,16 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DA91C75F-7E86-4937-B6A0-8B5C56B63452}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>NutritionValueTable.Scrapper</RootNamespace>
-    <AssemblyName>NutritionValueTable.Scrapper</AssemblyName>
+    <ProjectGuid>{99F8FFD1-EF7D-45ED-A8B2-33E89AB3E7BA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NutritionValueTable.Contract</RootNamespace>
+    <AssemblyName>NutritionValueTable.Contract</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -32,9 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="HtmlAgilityPack, Version=1.8.1.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
-      <HintPath>packages\HtmlAgilityPack.1.8.1\lib\Net45\HtmlAgilityPack.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -45,28 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Internal\Attributes\LabelAttribute.cs" />
-    <Compile Include="Internal\Attributes\UnitAttribute.cs" />
-    <Compile Include="Internal\Attributes\ValueAttribute.cs" />
-    <Compile Include="Internal\PageProductInformation.cs" />
-    <Compile Include="Internal\PageProductItem.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup />
-  <ItemGroup>
-    <ProjectReference Include="..\NutritionValueTable.Model\NutritionValueTable.Model.csproj">
-      <Project>{4AA2E3CF-7786-475B-92D7-F4252AB8DD03}</Project>
-      <Name>NutritionValueTable.Model</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NutritionValueTable.Common\NutritionValueTable.Common.csproj">
-      <Project>{e05b02fd-19c0-4221-9e92-b2ab2833924d}</Project>
-      <Name>NutritionValueTable.Common</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
