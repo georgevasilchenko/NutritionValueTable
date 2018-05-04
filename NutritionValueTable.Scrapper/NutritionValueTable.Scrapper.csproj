@@ -57,7 +57,9 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="sample.txt" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NutritionValueTable.Model\NutritionValueTable.Model.csproj">
       <Project>{4AA2E3CF-7786-475B-92D7-F4252AB8DD03}</Project>
