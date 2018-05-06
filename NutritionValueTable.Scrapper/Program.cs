@@ -1,6 +1,4 @@
 ﻿using HtmlAgilityPack;
-using NutritionValueTable.Common;
-using NutritionValueTable.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -84,6 +82,9 @@ namespace NutritionValueTable.Scrapper
          var imgs = document.DocumentNode.Descendants("img");
 
          var productInformation = new PageProductInformation();
+
+         // Product image
+         var imageElement = imgs.Single(o => o.Attributes.Contains("id") && o.Attributes["id"].Value == "cphMain_imgProd");
 
          // Values elements
          var valueElements = divs.Where(o => o.Attributes.Contains("id") && o.Attributes["id"].Value.Contains("cphMain_pnl"));

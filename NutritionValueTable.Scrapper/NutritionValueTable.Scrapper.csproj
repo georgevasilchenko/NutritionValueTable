@@ -32,10 +32,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="HtmlAgilityPack, Version=1.8.1.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
       <HintPath>packages\HtmlAgilityPack.1.8.1\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -45,11 +52,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Internal\Attributes\LabelAttribute.cs" />
-    <Compile Include="Internal\Attributes\UnitAttribute.cs" />
-    <Compile Include="Internal\Attributes\ValueAttribute.cs" />
-    <Compile Include="Internal\PageProductInformation.cs" />
-    <Compile Include="Internal\PageProductItem.cs" />
+    <Compile Include="Attributes\UnitValueAttribute.cs" />
+    <Compile Include="Contract\Attributes\LabelAttribute.cs" />
+    <Compile Include="Contract\Attributes\UnitAttribute.cs" />
+    <Compile Include="Contract\Attributes\ValueAttribute.cs" />
+    <Compile Include="Contract\PageProductInformation.cs" />
+    <Compile Include="Contract\PageProductItem.cs" />
+    <Compile Include="Extensions\EnumExtensions.cs" />
+    <Compile Include="Model\Nutrient\INutrient.cs" />
+    <Compile Include="Model\Nutrient\Nutrient.cs" />
+    <Compile Include="Model\Product\IProduct.cs" />
+    <Compile Include="Model\Product\Product.cs" />
+    <Compile Include="Model\Unit\Unit.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -59,16 +73,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="sample.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\NutritionValueTable.Model\NutritionValueTable.Model.csproj">
-      <Project>{4AA2E3CF-7786-475B-92D7-F4252AB8DD03}</Project>
-      <Name>NutritionValueTable.Model</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NutritionValueTable.Common\NutritionValueTable.Common.csproj">
-      <Project>{e05b02fd-19c0-4221-9e92-b2ab2833924d}</Project>
-      <Name>NutritionValueTable.Common</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
