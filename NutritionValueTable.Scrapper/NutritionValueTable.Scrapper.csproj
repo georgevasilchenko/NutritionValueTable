@@ -58,6 +58,7 @@
     <Compile Include="Contract\Attributes\ValueAttribute.cs" />
     <Compile Include="Contract\PageProductInformation.cs" />
     <Compile Include="Contract\PageProductItem.cs" />
+    <Compile Include="Data\DataContext.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Model\Nutrient\INutrient.cs" />
     <Compile Include="Model\Nutrient\Nutrient.cs" />
@@ -72,6 +73,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="product-example.html" />
     <Content Include="sample.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

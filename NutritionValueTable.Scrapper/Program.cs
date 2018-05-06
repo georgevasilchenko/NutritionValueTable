@@ -84,7 +84,8 @@ namespace NutritionValueTable.Scrapper
          var productInformation = new PageProductInformation();
 
          // Product image
-         var imageElement = imgs.Single(o => o.Attributes.Contains("id") && o.Attributes["id"].Value == "cphMain_imgProd");
+         var imageElement = imgs.Single(o => o.Attributes.Contains("id") && o.Attributes.Contains("src") && o.Attributes["id"].Value == "cphMain_imgProd");
+         productInformation.ImageRelativeUri = imageElement.Attributes["src"];
 
          // Values elements
          var valueElements = divs.Where(o => o.Attributes.Contains("id") && o.Attributes["id"].Value.Contains("cphMain_pnl"));
