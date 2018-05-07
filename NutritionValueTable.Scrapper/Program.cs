@@ -1,67 +1,76 @@
 ﻿using HtmlAgilityPack;
+using NutritionValueTable.Contract;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Configuration;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace NutritionValueTable.Scrapper
 {
+   /// <summary>Program class.</summary>
    internal class Program
    {
+      /// <summary>The base URI.</summary>
       public static string BaseUri = @"https://www.voedingswaardetabel.nl/";
+
+      /// <summary>The products list URI.</summary>
       public static string ProductsListUri = @"https://www.voedingswaardetabel.nl/voedingswaarde/";
 
-      public static HttpClient HttpClient;
-      public static List<Product> Products = new List<Product>();
-
-      public static string ProductsTable;
-
+      /// <summary>Defines the entry point of the application.</summary>
+      /// <param name="args">The arguments.</param>
       private static void Main(string[] args)
       {
-         HttpClient = new HttpClient();
-
-         for (byte i = 65; i < 66; i++) //91
+         using (var httpClient = new HttpClient())
          {
-            var character = Encoding.ASCII.GetString(new byte[] { i });
-
-            var pageText = GetHtmlPageText(HttpClient, ProductsListUri + character).GetAwaiter().GetResult();
-            var pageProductItems = GetPageProductItemsFromHtml("cphMain_ltvNutrition_hplProdname", pageText);
-
-            foreach (var item in pageProductItems)
+            using (var dbContext = new DataContext(ConfigurationManager.ConnectionStrings["Default"].ConnectionString))
             {
-               var productPageText = GetHtmlPageText(HttpClient, BaseUri + item.RelativeUri)
-                  .GetAwaiter()
-                  .GetResult();
-               var product = GetProductFromHtml(item.Name, productPageText);
-               Products.Add(product);
+               for (byte i = 65; i < 66; i++) //91
+               {
+                  var character = Encoding.ASCII.GetString(new byte[] { i });
 
-               Console.WriteLine("Added: " + product.Name);
+                  var pageText = GetHtmlPageText(httpClient, ProductsListUri + character).GetAwaiter().GetResult();
+                  var pageProductItems = GetPageProductItemsFromHtml("cphMain_ltvNutrition_hplProdname", pageText);
+
+                  foreach (var item in pageProductItems)
+                  {
+                     var productPageText = GetHtmlPageText(httpClient, BaseUri + item.RelativeUri)
+                        .GetAwaiter()
+                        .GetResult();
+                     var product = GetProductFromHtml(item.Name, productPageText, item.Id);
+
+                     if (product == null)
+                     {
+                        continue;
+                     }
+
+                     dbContext.Products.Add(product);
+
+                     Console.WriteLine("Added item with name: " + product.Name);
+                  }
+
+                  Console.ForegroundColor = ConsoleColor.Green;
+                  Console.WriteLine("Added all items for character: " + character);
+                  Console.ResetColor();
+               }
+
+               dbContext.SaveChanges();
             }
-
-            Console.WriteLine("Ready for: " + character);
-         }
-
-         ProductsTable = string.Join("\r\n", Products.Select(o =>
-         {
-            var values = o.Name + ";";
-            values += string.Join(";", o.Nutrients.Select(n => $"{n.Name},{n.Unit},{n.Value}"));
-            return values;
-         }));
-
-         var exportPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\")) + "sample.txt";
-
-         using (var stream = File.CreateText(exportPath))
-         {
-            stream.Write(ProductsTable);
          }
       }
 
+      /// <summary>Gets the HTML page text.</summary>
+      /// <param name="httpClient">The HTTP client.</param>
+      /// <param name="uri">The URI.</param>
+      /// <returns>A <see cref="Task{string}" /> reference.</returns>
       private static async Task<string> GetHtmlPageText(HttpClient httpClient, string uri) => await httpClient.GetStringAsync(uri);
 
+      /// <summary>Gets the page product items from HTML.</summary>
+      /// <param name="productItemId">The product item identifier.</param>
+      /// <param name="htmlText">The HTML text.</param>
+      /// <returns>A <see cref="IEnumerable{PageProductItem}" /> reference.</returns>
       private static IEnumerable<PageProductItem> GetPageProductItemsFromHtml(string productItemId, string htmlText)
       {
          var document = new HtmlDocument();
@@ -73,7 +82,13 @@ namespace NutritionValueTable.Scrapper
                .Select(o => new PageProductItem(o.InnerHtml, o.Attributes["href"].Value));
       }
 
-      private static Product GetProductFromHtml(string productName, string htmlText)
+      /// <summary>Gets the product from HTML.</summary>
+      /// <param name="productName">Name of the product.</param>
+      /// <param name="htmlText">The HTML text.</param>
+      /// <param name="productItemId">The product item identifier.</param>
+      /// <returns>A <see cref="Product" /> reference.</returns>
+      /// <exception cref="System.Exception">Length of attribute collections is not equal!</exception>
+      private static Product GetProductFromHtml(string productName, string htmlText, int productItemId)
       {
          var document = new HtmlDocument();
          document.LoadHtml(htmlText);
@@ -84,8 +99,21 @@ namespace NutritionValueTable.Scrapper
          var productInformation = new PageProductInformation();
 
          // Product image
-         var imageElement = imgs.Single(o => o.Attributes.Contains("id") && o.Attributes.Contains("src") && o.Attributes["id"].Value == "cphMain_imgProd");
-         productInformation.ImageRelativeUri = imageElement.Attributes["src"];
+         var imageElement = imgs.SingleOrDefault(o =>
+         o.Attributes.Contains("id") &&
+         o.Attributes.Contains("src") &&
+         o.Attributes["id"].Value == "cphMain_imgProd");
+         if (imageElement != null)
+         {
+            productInformation.ImageRelativeUri = imageElement.Attributes["src"].Value;
+         }
+         else
+         {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Product: " + productName + " is invalid!");
+            Console.ResetColor();
+            return null;
+         }
 
          // Values elements
          var valueElements = divs.Where(o => o.Attributes.Contains("id") && o.Attributes["id"].Value.Contains("cphMain_pnl"));
@@ -168,18 +196,35 @@ namespace NutritionValueTable.Scrapper
             nutrients.Add(new Nutrient(name, unit, value));
          }
 
-         return new Product(productName, nutrients);
+         return new Product(productName, BaseUri.TrimEnd('/') + productInformation.ImageRelativeUri, productItemId, nutrients);
       }
 
+      /// <summary>Gets the unit.</summary>
+      /// <param name="title">The title.</param>
+      /// <returns>A <see cref="Unit" /> value.</returns>
+      /// <exception cref="System.ArgumentException">Unknown nutrient abbreviation was parsed.</exception>
       private static Unit GetUnit(string title)
       {
-         var type = typeof(Unit);
-         var fields = type.GetFields(BindingFlags.Static | BindingFlags.Public);
+         switch (title)
+         {
+            case "kcal":
+               return Unit.KiloCalorie;
 
-         var targetField = fields.Single(o => ((UnitValueAttribute)o.GetCustomAttribute(typeof(UnitValueAttribute))).ShortName == title);
-         var value = (Unit)Enum.Parse(type, targetField.Name);
+            case "kJ":
+               return Unit.KiloJoule;
 
-         return value;
+            case "g":
+               return Unit.Gram;
+
+            case "mg":
+               return Unit.MilliGram;
+
+            case "µg":
+               return Unit.MicroGram;
+
+            default:
+               throw new ArgumentException("Unknown nutrient abbreviation was parsed.");
+         }
       }
    }
 }

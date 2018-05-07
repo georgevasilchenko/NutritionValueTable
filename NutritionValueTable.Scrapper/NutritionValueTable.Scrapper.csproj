@@ -43,6 +43,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -52,19 +53,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attributes\UnitValueAttribute.cs" />
     <Compile Include="Contract\Attributes\LabelAttribute.cs" />
     <Compile Include="Contract\Attributes\UnitAttribute.cs" />
     <Compile Include="Contract\Attributes\ValueAttribute.cs" />
     <Compile Include="Contract\PageProductInformation.cs" />
     <Compile Include="Contract\PageProductItem.cs" />
     <Compile Include="Data\DataContext.cs" />
-    <Compile Include="Extensions\EnumExtensions.cs" />
-    <Compile Include="Model\Nutrient\INutrient.cs" />
     <Compile Include="Model\Nutrient\Nutrient.cs" />
-    <Compile Include="Model\Product\IProduct.cs" />
     <Compile Include="Model\Product\Product.cs" />
-    <Compile Include="Model\Unit\Unit.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -75,6 +71,12 @@
   <ItemGroup>
     <Content Include="product-example.html" />
     <Content Include="sample.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NutritionValueTable.Contract\NutritionValueTable.Contract.csproj">
+      <Project>{99F8FFD1-EF7D-45ED-A8B2-33E89AB3E7BA}</Project>
+      <Name>NutritionValueTable.Contract</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
